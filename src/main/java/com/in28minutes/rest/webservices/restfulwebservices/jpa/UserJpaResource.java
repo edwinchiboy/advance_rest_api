@@ -1,5 +1,8 @@
-package com.in28minutes.rest.webservices.restfulwebservices.user;
+package com.in28minutes.rest.webservices.restfulwebservices.jpa;
 
+import com.in28minutes.rest.webservices.restfulwebservices.user.User;
+import com.in28minutes.rest.webservices.restfulwebservices.user.UserDaoService;
+import com.in28minutes.rest.webservices.restfulwebservices.user.UserNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
@@ -14,20 +17,22 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
-public class UserResource {
+public class UserJpaResource {
     private final UserDaoService userDaoService;
+    private  final UserRepository userRepository;
 
-    public UserResource(final UserDaoService userDaoService) {
+    public UserJpaResource(final UserDaoService userDaoService, final UserRepository userRepository) {
         this.userDaoService = userDaoService;
+        this.userRepository = userRepository;
     }
 
-    @GetMapping("/users")
+    @GetMapping("/jpa/users")
     public List<User> retrieveAllUsers() {
         return userDaoService.findAll();
 
     }
 
-    @GetMapping("/users/{userId}")
+    @GetMapping("/jpa/users/{userId}")
     public EntityModel<User> retrieveUser(@PathVariable("userId") final int userId) {
         User user = userDaoService.findOne(userId);
 
@@ -43,7 +48,7 @@ public class UserResource {
         return entityModel;
     }
 
-    @PostMapping("/users")
+    @PostMapping("/jpa/users")
     public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
 
         User savedUser = userDaoService.save(user);
@@ -57,7 +62,7 @@ public class UserResource {
         return ResponseEntity.created(location).build();
     }
 
-    @DeleteMapping("/users/{userId}")
+    @DeleteMapping("/jpa/users/{userId}")
     public void deleteUser(@PathVariable("userId") final int userId) {
         userDaoService.deleteById(userId);
 
